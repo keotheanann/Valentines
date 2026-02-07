@@ -53,6 +53,7 @@
             width: 160px;
             height: auto;
             border-radius: 20px;
+            cursor: pointer;
         }
 
         h1 {
@@ -96,29 +97,32 @@
             position: relative;
         }
 
-        /* Improved Floating Hearts */
         .heart {
             position: fixed;
             color: var(--heart-red);
             user-select: none;
             z-index: 1;
             pointer-events: none;
-            bottom: -50px; /* Start completely off-screen at the bottom */
+            bottom: -50px;
             animation: floatAway linear forwards;
         }
 
         @keyframes floatAway {
-            0% { 
-                transform: translateY(0) translateX(0) rotate(0deg); 
-                opacity: 0; 
-            }
+            0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
             10% { opacity: 0.8; }
             90% { opacity: 0.8; }
-            100% { 
-                /* Travel more than 110% of viewport height to ensure it clears the top */
-                transform: translateY(-120vh) translateX(var(--sway)) rotate(360deg); 
-                opacity: 0; 
-            }
+            100% { transform: translateY(-120vh) translateX(var(--sway)) rotate(360deg); opacity: 0; }
+        }
+
+        #secret-message {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #555;
+            font-style: italic;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            line-height: 1.5;
+            padding: 0 10px;
         }
 
         .fade-in {
@@ -135,7 +139,7 @@
 
     <div class="card" id="mainCard">
         <div class="gif-wrapper">
-            <img class="display-img" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG8zZXF5dnllMDlrcmhvcGsyZHAzZ3Q0aHh5aWllb3p1dHZzZm1nMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/754u3UNlbbc2tMg97K/giphy.gif" alt="Waving sticker">
+            <img class="display-img" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG8zZXF5dnllMDlrcmhvcGsyZHAzZ3Q0aHh5aWllb3p1dHZzZm1nMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/754u3UNlbbc2tMg97K/giphy.gif" alt="Waving">
         </div>
         
         <h1 id="question">Heng Kim, will you be my Valentine?</h1>
@@ -152,18 +156,10 @@
         let noClickCount = 0;
 
         const phrases = [
-            "No", 
-            "Are you sure? 🥺", 
-            "Think again, Heng Kim!", 
-            "I'll be very sad...", 
-            "Wait, really?", 
-            "Don't do this!",
-            "Surely not?",
-            "Last chance...", 
-            "I'm warning you!",
-            "Okay, I'm out!",
-            "Can't catch me now!",
-            "Nope! Click Yes!"
+            "No", "Are you sure? 🥺", "Think again, Heng Kim!", 
+            "I'll be very sad...", "Wait, really?", "Don't do this!",
+            "Surely not?", "Last chance...", "I'm warning you!",
+            "Okay, I'm out!", "Can't catch me now!", "Nope! Click Yes!"
         ];
 
         function handleNo() {
@@ -193,31 +189,27 @@
             const heart = document.createElement('div');
             heart.innerHTML = '❤️';
             heart.classList.add('heart');
-            
-            // Randomize appearance
             const startX = Math.random() * 100;
-            const sway = (Math.random() - 0.5) * 200; // Sway up to 100px left or right
+            const sway = (Math.random() - 0.5) * 200;
             const size = Math.random() * 20 + 15;
-            const duration = Math.random() * 3 + 4; // 4 to 7 seconds
+            const duration = Math.random() * 3 + 4;
             
             heart.style.left = startX + 'vw';
             heart.style.fontSize = size + 'px';
             heart.style.setProperty('--sway', sway + 'px');
             heart.style.animationDuration = duration + 's';
-            
             document.body.appendChild(heart);
-            
-            // Cleanup
             setTimeout(() => heart.remove(), duration * 1000);
         }
 
         function startHearts() {
-            // Initial burst
-            for(let i=0; i<10; i++) {
-                setTimeout(spawnHeart, i * 100);
-            }
-            // Continuous flow
+            for(let i=0; i<10; i++) setTimeout(spawnHeart, i * 100);
             setInterval(spawnHeart, 300);
+        }
+
+        function showSecret() {
+            const msg = document.getElementById('secret-message');
+            if (msg) msg.style.opacity = "1";
         }
 
         function celebrate() {
@@ -230,10 +222,14 @@
             card.innerHTML = `
                 <div class="fade-in">
                     <div class="gif-wrapper">
-                        <img class="display-img" src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDlodGFocXR5eDRva2FjbzNrMzR6YXprOG5ocTVxb2dvMWxyMDAxNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YVhpNLN6aBCpczlLGs/giphy.gif" alt="Victory">
+                        <img class="display-img" 
+                             src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDlodGFocXR5eDRva2FjbzNrMzR6YXprOG5ocTVxb2dvMWxyMDAxNCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/YVhpNLN6aBCpczlLGs/giphy.gif" 
+                             alt="Victory" 
+                             onclick="showSecret()">
                     </div>
                     <h1 style="color: var(--heart-red); margin-top: 0;">I knew you'd say yes, Heng Kim!</h1>
                     <p style="color: #666; font-weight: 600;">You made my day! ❤️</p>
+                    <div id="secret-message">"Even now, I catch myself replaying our first talks... and smiling every time. Somewhere along the way, I realized... I liked having you around more than I expected."</div>
                 </div>
             `;
             
