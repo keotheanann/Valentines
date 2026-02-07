@@ -96,19 +96,29 @@
             position: relative;
         }
 
+        /* Improved Floating Hearts */
         .heart {
             position: fixed;
             color: var(--heart-red);
-            font-size: 20px;
             user-select: none;
             z-index: 1;
             pointer-events: none;
-            animation: floatUp linear forwards;
+            bottom: -50px; /* Start completely off-screen at the bottom */
+            animation: floatAway linear forwards;
         }
 
-        @keyframes floatUp {
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        @keyframes floatAway {
+            0% { 
+                transform: translateY(0) translateX(0) rotate(0deg); 
+                opacity: 0; 
+            }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { 
+                /* Travel more than 110% of viewport height to ensure it clears the top */
+                transform: translateY(-120vh) translateX(var(--sway)) rotate(360deg); 
+                opacity: 0; 
+            }
         }
 
         .fade-in {
@@ -125,7 +135,7 @@
 
     <div class="card" id="mainCard">
         <div class="gif-wrapper">
-            <img class="display-img" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG8zZXF5dnllMDlrcmhvcGsyZHAzZ3Q0aHh5aWllb3p1dHZzZm1nMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/754u3UNlbbc2tMg97K/giphy.gif" alt="Waving">
+            <img class="display-img" src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG8zZXF5dnllMDlrcmhvcGsyZHAzZ3Q0aHh5aWllb3p1dHZzZm1nMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/754u3UNlbbc2tMg97K/giphy.gif" alt="Waving sticker">
         </div>
         
         <h1 id="question">Heng Kim, will you be my Valentine?</h1>
@@ -147,8 +157,11 @@
             "Think again, Heng Kim!", 
             "I'll be very sad...", 
             "Wait, really?", 
+            "Don't do this!",
+            "Surely not?",
             "Last chance...", 
-            "Okay, I'm leaving!", 
+            "I'm warning you!",
+            "Okay, I'm out!",
             "Can't catch me now!",
             "Nope! Click Yes!"
         ];
@@ -158,17 +171,14 @@
             const noBtn = document.getElementById('noBtn');
             const yesBtn = document.getElementById('yesBtn');
 
-            // 1. Grow the Yes button every time
             yesScale += 1.3;
-            yesFontSize += 0.7;
+            yesFontSize += 0.75;
             yesBtn.style.transform = `scale(${yesScale})`;
             yesBtn.style.fontSize = `${yesFontSize}rem`;
 
-            // 2. Change the No button text
             noBtn.innerText = phrases[Math.min(noClickCount, phrases.length - 1)];
 
-            // 3. TELEPORT LOGIC: Only starts after click #7
-            if (noClickCount >= 7) {
+            if (noClickCount >= 11) {
                 noBtn.style.position = 'fixed';
                 const padding = 60;
                 const randomX = Math.random() * (window.innerWidth - noBtn.offsetWidth - padding) + (padding / 2);
@@ -179,19 +189,35 @@
             }
         }
 
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.innerHTML = '❤️';
+            heart.classList.add('heart');
+            
+            // Randomize appearance
+            const startX = Math.random() * 100;
+            const sway = (Math.random() - 0.5) * 200; // Sway up to 100px left or right
+            const size = Math.random() * 20 + 15;
+            const duration = Math.random() * 3 + 4; // 4 to 7 seconds
+            
+            heart.style.left = startX + 'vw';
+            heart.style.fontSize = size + 'px';
+            heart.style.setProperty('--sway', sway + 'px');
+            heart.style.animationDuration = duration + 's';
+            
+            document.body.appendChild(heart);
+            
+            // Cleanup
+            setTimeout(() => heart.remove(), duration * 1000);
+        }
+
         function startHearts() {
-            setInterval(() => {
-                const heart = document.createElement('div');
-                heart.innerHTML = '❤️';
-                heart.classList.add('heart');
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.fontSize = Math.random() * 20 + 15 + 'px';
-                heart.style.animationDuration = Math.random() * 3 + 3 + 's';
-                heart.style.opacity = Math.random();
-                document.body.appendChild(heart);
-                
-                setTimeout(() => heart.remove(), 6000);
-            }, 300);
+            // Initial burst
+            for(let i=0; i<10; i++) {
+                setTimeout(spawnHeart, i * 100);
+            }
+            // Continuous flow
+            setInterval(spawnHeart, 300);
         }
 
         function celebrate() {
